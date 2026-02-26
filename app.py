@@ -1,10 +1,12 @@
 import os
 import google.generativeai as genai
 import streamlit as st
-
 from dotenv import load_dotenv
-load_dotenv()
 
+# =========================
+# Setup
+# =========================
+load_dotenv()
 GENAI_API_KEY = os.getenv("GENAI_API_KEY")
 
 if not GENAI_API_KEY:
@@ -12,75 +14,131 @@ if not GENAI_API_KEY:
     st.stop()
 
 genai.configure(api_key=GENAI_API_KEY)
+model = genai.GenerativeModel("models/gemini-2.5-flash")
 
-# Initialize model
-model = genai.GenerativeModel("gemini-2.5-flash")
 
-# 👇 ADD THE FUNCTION HERE
+# =========================
+# Safe AI Wrapper
+# =========================
 def generate_ai_response(prompt):
     try:
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
+        error_str = str(e).lower()
+
+        if "429" in error_str or "quota" in error_str:
+            return """
+⚠️ API quota exceeded — displaying mock intelligence output.
+
+Strategic Insight:
+This scenario reflects a moderately aligned growth opportunity.
+
+Recommended Action:
+Initiate a structured discovery conversation within 48 hours.
+
+Messaging Tone:
+Consultative, value-driven, and outcome-focused.
+"""
         return f"Error generating response: {e}"
 
+
+# =========================
+# App Layout
+# =========================
 st.set_page_config(page_title="Genovance", layout="wide")
 
 st.title("Genovance")
-st.subheader("AI-Powered Business Growth Assistant")
+st.subheader("Unified AI Co-Pilot for Strategy, Messaging & Conversion")
+st.markdown(
+"""
+Genovance mirrors the real startup growth lifecycle:
+
+**1. Strategy → 2. Messaging → 3. Conversion Intelligence**
+
+An integrated GenAI engine that helps founders design campaigns,
+craft persuasive positioning, and prioritize high-value leads.
+"""
+)
+
 st.markdown("---")
 
 tab1, tab2, tab3 = st.tabs(
-    ["Campaign Strategy", "Sales Pitch", "Lead Scoring"]
+    ["Strategy Layer", "Messaging Layer", "Conversion Intelligence Layer"]
 )
 
+# =========================
+# 1️⃣ Strategy Layer
+# =========================
 with tab1:
-    st.header("Campaign Strategy Generator")
-    st.write("Generate a strategic marketing campaign plan.")
+    st.header("Campaign Strategy Intelligence")
 
-    business_type = st.text_input("Business Type", value="SaaS productivity app")
-    target_audience = st.text_input("Target Audience", value="College students and young professionals")
-    budget = st.selectbox("Marketing Budget", ["Low", "Medium", "High"])
-    goal = st.selectbox("Primary Goal", ["Brand Awareness", "Lead Generation", "Sales Conversion"])
+    if "campaign_result" not in st.session_state:
+        st.session_state.campaign_result = ""
 
-    generate_btn = st.button("Generate Campaign Strategy")
+    with st.form("campaign_form"):
+        business_type = st.text_input(
+            "Business Type",
+            value="SaaS productivity app"
+        )
+        target_audience = st.text_input(
+            "Target Audience",
+            value="College students and young professionals"
+        )
+        budget = st.selectbox(
+            "Marketing Budget",
+            ["Low", "Medium", "High"]
+        )
+        goal = st.selectbox(
+            "Primary Goal",
+            ["Brand Awareness", "Lead Generation", "Sales Conversion"]
+        )
 
-    if generate_btn:
-        with st.spinner("Generating strategy..."):
-            prompt = f"""
-You are a marketing strategist.
+        submitted = st.form_submit_button("Generate Strategic Plan")
 
-Based on the following inputs, generate a structured campaign plan.
+    if submitted:
+        prompt = f"""
+You are a senior growth strategist.
 
-Business Type: {business_type}
+Business: {business_type}
 Target Audience: {target_audience}
 Budget Level: {budget}
 Primary Goal: {goal}
 
-Provide the output in the following structured format:
+Deliver a structured strategic campaign plan:
 
 1. Market Insight
-2. Campaign Concept
-3. Recommended Channels (bullet points)
-4. Sample Ad Copy
-5. Key Performance Metrics to Track
+2. Strategic Campaign Concept
+3. Channel Selection Rationale
+4. Sample Executive-Level Ad Copy
+5. Key Performance Metrics
 
-Keep it strategic, clear, and concise.
+Tone: Professional, strategic, investor-ready.
 """
-            result = generate_ai_response(prompt)
 
-        st.markdown("### Campaign Strategy Output")
-        st.write(result)
+        with st.spinner("Generating strategic intelligence..."):
+            st.session_state.campaign_result = generate_ai_response(prompt)
+
+    st.markdown("### Strategic Output")
+    if st.session_state.campaign_result:
+        st.markdown(st.session_state.campaign_result)
+    else:
+        st.info("Generated strategy will appear here.")
 
 
+# =========================
+# 2️⃣ Messaging Layer
+# =========================
 with tab2:
-    st.header("Sales Pitch Generator")
-    st.write("Create a persuasive sales pitch for your product.")
+    st.header("Sales Positioning Intelligence")
 
-    product_name = st.text_input("Product / Service Name", value="FocusFlow App")
+    product_name = st.text_input(
+        "Product / Service Name",
+        value="FocusFlow App"
+    )
     product_description = st.text_area(
         "Product Description",
-        value="A productivity app that helps students manage tasks, deadlines, and focus sessions efficiently."
+        value="An AI-powered productivity system that optimizes task planning and focus sessions."
     )
     target_customer = st.text_input(
         "Target Customer",
@@ -88,46 +146,52 @@ with tab2:
     )
     unique_value = st.text_input(
         "Unique Value Proposition",
-        value="AI-powered smart scheduling and distraction tracking"
+        value="AI-based adaptive scheduling and distraction analytics"
     )
 
-    generate_pitch_btn = st.button("Generate Sales Pitch")
+    if st.button("Generate Persuasive Positioning"):
 
-    if generate_pitch_btn:
-        with st.spinner("Generating sales pitch..."):
-            prompt = f"""
-You are a sales strategist.
+        prompt = f"""
+You are a senior sales strategist.
 
-Based on the following inputs, create a structured and persuasive sales pitch.
-
-Product Name: {product_name}
-Product Description: {product_description}
+Product: {product_name}
+Description: {product_description}
 Target Customer: {target_customer}
-Unique Value Proposition: {unique_value}
+Unique Value: {unique_value}
 
-Structure the pitch clearly using:
+Deliver:
 
-1. Hook
-2. Problem Statement
-3. Solution
-4. Value Proposition
-5. Closing Call-to-Action
+1. Executive Hook
+2. Core Pain Point Framing
+3. Solution Narrative
+4. Value Proposition Expansion
+5. Conversion-Focused Call to Action
 
-Keep it clear, compelling, and moderately concise.
+Tone: Confident, persuasive, outcome-oriented.
 """
+
+        with st.spinner("Generating messaging intelligence..."):
             pitch_result = generate_ai_response(prompt)
 
-        st.markdown("### Sales Pitch Output")
-        st.write(pitch_result)
+        st.markdown("### Messaging Output")
+        st.markdown(pitch_result)
 
 
+# =========================
+# 3️⃣ Conversion Intelligence Layer
+# =========================
 with tab3:
-    st.header("Lead Scoring Engine")
-    st.write("Evaluate the quality of a potential lead based on structured inputs.")
+    st.header("Lead Qualification & Conversion Intelligence")
 
     company_size = st.selectbox(
         "Company Size",
-        ["Student / Individual", "Startup (1-10)", "Small Business (10-50)", "Medium Business (50-200)", "Enterprise (200+)"]
+        [
+            "Student / Individual",
+            "Startup (1-10)",
+            "Small Business (10-50)",
+            "Medium Business (50-200)",
+            "Enterprise (200+)"
+        ]
     )
 
     budget_level = st.selectbox(
@@ -142,15 +206,18 @@ with tab3:
 
     engagement = st.selectbox(
         "Engagement Level",
-        ["Visited Website Once", "Downloaded Brochure", "Requested Demo / Contacted Sales"]
+        [
+            "Visited Website Once",
+            "Downloaded Brochure",
+            "Requested Demo / Contacted Sales"
+        ]
     )
 
-    generate_score_btn = st.button("Calculate Lead Score")
+    if st.button("Analyze Lead Potential"):
 
-    if generate_score_btn:
         score = 0
 
-        # Company size scoring
+        # Deterministic weighted scoring
         if company_size == "Enterprise (200+)":
             score += 30
         elif company_size == "Medium Business (50-200)":
@@ -160,7 +227,6 @@ with tab3:
         else:
             score += 10
 
-        # Budget scoring
         if budget_level == "High":
             score += 30
         elif budget_level == "Moderate":
@@ -168,7 +234,6 @@ with tab3:
         else:
             score += 10
 
-        # Urgency scoring
         if urgency == "Ready to Buy Soon":
             score += 25
         elif urgency == "Considering Options":
@@ -176,7 +241,6 @@ with tab3:
         else:
             score += 5
 
-        # Engagement scoring
         if engagement == "Requested Demo / Contacted Sales":
             score += 25
         elif engagement == "Downloaded Brochure":
@@ -184,12 +248,42 @@ with tab3:
         else:
             score += 5
 
-        st.markdown("### Lead Score Result")
-        st.success(f"Lead Score: {score} / 110")
+        normalized_score = round((score / 110) * 100)
 
-        if score >= 80:
-            st.write("🔥 High-Quality Lead — Prioritize Immediately")
-        elif score >= 55:
-            st.write("⚡ Moderate Lead — Nurture Strategically")
+        st.markdown("### Lead Intelligence Score")
+        st.success(f"Score: {normalized_score} / 100")
+
+        if normalized_score >= 80:
+            category = "High-Intent Conversion Opportunity"
+        elif normalized_score >= 50:
+            category = "Warm Opportunity"
         else:
-            st.write("🌱 Early-Stage Lead — Add to Marketing Funnel")
+            category = "Early-Stage Prospect"
+
+        st.markdown(f"**Classification:** {category}")
+
+        # AI Strategic Interpretation Layer
+        explanation_prompt = f"""
+You are a senior revenue strategist.
+
+Lead Score: {normalized_score}/100
+Classification: {category}
+Company Size: {company_size}
+Budget Level: {budget_level}
+Urgency: {urgency}
+Engagement: {engagement}
+
+Provide:
+
+1. Why this lead achieved this score
+2. Strategic next step for sales team
+3. Recommended communication tone
+
+Keep it concise, executive-level, and actionable.
+"""
+
+        with st.spinner("Generating conversion intelligence..."):
+            advisory = generate_ai_response(explanation_prompt)
+
+        st.markdown("### Strategic Conversion Advisory")
+        st.markdown(advisory)
