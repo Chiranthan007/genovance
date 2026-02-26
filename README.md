@@ -99,12 +99,13 @@ Recommended screenshots:
 
 ---
 
-## 🌱 Future Enhancements
+## 🌱 Potential Extensions
 
-- CRM integration for real lead data  
-- Historical scoring memory  
-- Multi-campaign comparison dashboard  
-- User authentication and role-based insights  
+- Cross-layer memory to reuse campaign insights inside messaging and lead qualification.
+- Adjustable scoring weights to allow users to customize evaluation criteria.
+- Export functionality (PDF or structured report download).
+- Prompt tuning for industry-specific growth strategies.
+- Basic analytics panel to summarize lead distribution across categories.  
 
 ---
 
