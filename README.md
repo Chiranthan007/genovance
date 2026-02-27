@@ -1,4 +1,5 @@
 # Genovance  
+🏆 Built for the GenAI Hackathon 2026
 ## Unified AI Growth Intelligence Engine  
 
 Genovance is a GenAI-powered system that mirrors the real startup growth lifecycle:
