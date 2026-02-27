@@ -7,13 +7,15 @@ from dotenv import load_dotenv
 # Setup
 # =========================
 load_dotenv()
-GENAI_API_KEY = os.getenv("GENAI_API_KEY")
+PRIMARY_KEY = os.getenv("GENAI_API_KEY_PRIMARY")
+BACKUP_KEY = os.getenv("GENAI_API_KEY_BACKUP")
 
-if not GENAI_API_KEY:
-    st.error("API key not found. Please set GENAI_API_KEY.")
+if not PRIMARY_KEY:
+    st.error("Primary API key missing.")
     st.stop()
 
-genai.configure(api_key=GENAI_API_KEY)
+# Start with primary key
+genai.configure(api_key=PRIMARY_KEY)
 model = genai.GenerativeModel("models/gemini-2.5-flash")
 
 
@@ -24,22 +26,19 @@ def generate_ai_response(prompt):
     try:
         response = model.generate_content(prompt)
         return response.text
+
     except Exception as e:
         error_str = str(e).lower()
 
-        if "429" in error_str or "quota" in error_str:
-            return """
-⚠️ API quota exceeded — displaying mock intelligence output.
+        if ("429" in error_str or "quota" in error_str) and BACKUP_KEY:
+            try:
+                genai.configure(api_key=BACKUP_KEY)
+                backup_model = genai.GenerativeModel("models/gemini-2.5-flash")
+                response = backup_model.generate_content(prompt)
+                return response.text
+            except Exception:
+                pass
 
-Strategic Insight:
-This scenario reflects a moderately aligned growth opportunity.
-
-Recommended Action:
-Initiate a structured discovery conversation within 48 hours.
-
-Messaging Tone:
-Consultative, value-driven, and outcome-focused.
-"""
         return f"Error generating response: {e}"
 
 
