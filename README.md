@@ -80,14 +80,30 @@ This mirrors how real growth teams operate in production environments.
 
 ---
 
-## 📸 Demo Screenshots
+📸 Demo Screenshots
 
-(Add screenshots here after generating real outputs.)
+Strategy Layer
+Campaign strategy generation powered by Gemini.
 
-Recommended screenshots:
-- Strategy Layer with generated campaign output  
-- Messaging Layer with structured sales pitch  
-- Conversion Intelligence Layer with score + advisory  
+![Strategy Input](screenshots/strategy_input.png)
+![Market Insight](screenshots/strategy_1_market_insight.png)
+![Campaign Concept](screenshots/strategy_2_campaign_concept.png)
+![Channel Strategy](screenshots/strategy_3_channel_strategy.png)
+![Ad Copy](screenshots/strategy_4_ad_copy.png)
+![KPIs](screenshots/strategy_5_kpis.png)
+
+Messaging Layer
+Structured AI-generated persuasive positioning.
+
+![Messaging Input](screenshots/messaging_input.png)
+![Messaging Output](screenshots/messaging_output_1.png)
+![Messaging Output Continued](screenshots/messaging_output_2.png)
+
+Conversion Intelligence Layer
+Hybrid deterministic scoring + AI advisory.
+
+![Lead Qualification Input](screenshots/conversion_inputs.png)
+![Lead Analysis Output](screenshots/conversion_analysis.png) 
 
 ---
 
